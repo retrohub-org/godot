@@ -442,6 +442,7 @@ private:
 	int popup_edited_item_col = -1;
 	bool hide_root = false;
 	SelectMode select_mode = SELECT_SINGLE;
+	bool single_click_select = false;
 
 	int blocked = 0;
 
@@ -787,6 +788,9 @@ public:
 	bool get_allow_search() const;
 
 	Size2 get_minimum_size() const override;
+
+	void set_single_click_select(bool p_single);
+	bool is_single_click_select_enabled() const;
 
 	Tree();
 	~Tree();
