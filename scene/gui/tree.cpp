@@ -2743,12 +2743,14 @@ int Tree::propagate_mouse_event(const Point2i &p_pos, int x_ofs, int y_ofs, int 
 		if (p_button == MouseButton::LEFT || (p_button == MouseButton::RIGHT && allow_rmb_select)) {
 			/* process selection */
 
-			if (p_double_click && (!c.editable || c.mode == TreeItem::CELL_MODE_CUSTOM || c.mode == TreeItem::CELL_MODE_ICON /*|| c.mode==TreeItem::CELL_MODE_CHECK*/)) { //it's confusing for check
+			if ((p_doubleclick || single_click_select) && (!c.editable || c.mode == TreeItem::CELL_MODE_CUSTOM || c.mode == TreeItem::CELL_MODE_ICON /*|| c.mode==TreeItem::CELL_MODE_CHECK*/)) { //it's confusing for check
 				// Emits the "item_activated" signal.
 				propagate_mouse_activated = true;
 
 				incr_search.clear();
-				return -1;
+				if (!single_click_select) {
+					return -1;
+				}
 			}
 
 			if (select_mode == SELECT_MULTI && p_mod->is_command_or_control_pressed() && c.selectable) {
@@ -5153,6 +5155,14 @@ bool Tree::get_allow_reselect() const {
 	return allow_reselect;
 }
 
+void Tree::set_single_click_select(bool p_single) {
+	single_click_select = p_single;
+}
+
+bool Tree::is_single_click_select_enabled() const {
+	return single_click_select;
+}
+
 void Tree::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("clear"), &Tree::clear);
 	ClassDB::bind_method(D_METHOD("create_item", "parent", "index"), &Tree::create_item, DEFVAL(Variant()), DEFVAL(-1));
@@ -5221,6 +5231,9 @@ void Tree::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_enable_recursive_folding", "enable"), &Tree::set_enable_recursive_folding);
 	ClassDB::bind_method(D_METHOD("is_recursive_folding_enabled"), &Tree::is_recursive_folding_enabled);
 
+	ClassDB::bind_method(D_METHOD("set_single_click_select", "allow"), &Tree::set_single_click_select);
+	ClassDB::bind_method(D_METHOD("is_single_click_select_enabled"), &Tree::is_single_click_select_enabled);
+
 	ClassDB::bind_method(D_METHOD("set_drop_mode_flags", "flags"), &Tree::set_drop_mode_flags);
 	ClassDB::bind_method(D_METHOD("get_drop_mode_flags"), &Tree::get_drop_mode_flags);
 
@@ -5237,6 +5250,7 @@ void Tree::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "hide_folding"), "set_hide_folding", "is_folding_hidden");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "enable_recursive_folding"), "set_enable_recursive_folding", "is_recursive_folding_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "hide_root"), "set_hide_root", "is_root_hidden");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "single_click_select"), "set_single_click_select", "is_single_click_select_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "drop_mode_flags", PROPERTY_HINT_FLAGS, "On Item,In Between"), "set_drop_mode_flags", "get_drop_mode_flags");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "select_mode", PROPERTY_HINT_ENUM, "Single,Row,Multi"), "set_select_mode", "get_select_mode");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "scroll_horizontal_enabled"), "set_h_scroll_enabled", "is_h_scroll_enabled");
