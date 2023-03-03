@@ -371,6 +371,9 @@
 		<member name="select_mode" type="int" setter="set_select_mode" getter="get_select_mode" enum="Tree.SelectMode" default="0">
 			Allows single or multiple selection. See the [enum SelectMode] constants.
 		</member>
+		<member name="single_click_select" type="bool" setter="set_single_click_select" getter="is_single_click_select_enabled" default="false">
+			If [code]true[/code], a single click will selects an item, instead of requiring a double-click. This is important for controller input.
+		</member>
 	</members>
 	<signals>
 		<signal name="button_clicked">
