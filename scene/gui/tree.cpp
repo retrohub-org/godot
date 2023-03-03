@@ -1733,12 +1733,14 @@ int Tree::propagate_mouse_event(const Point2i &p_pos, int x_ofs, int y_ofs, bool
 		if (p_button == BUTTON_LEFT || (p_button == BUTTON_RIGHT && allow_rmb_select)) {
 			/* process selection */
 
-			if (p_doubleclick && (!c.editable || c.mode == TreeItem::CELL_MODE_CUSTOM || c.mode == TreeItem::CELL_MODE_ICON /*|| c.mode==TreeItem::CELL_MODE_CHECK*/)) { //it's confusing for check
+			if ((p_doubleclick || single_click_select) && (!c.editable || c.mode == TreeItem::CELL_MODE_CUSTOM || c.mode == TreeItem::CELL_MODE_ICON /*|| c.mode==TreeItem::CELL_MODE_CHECK*/)) { //it's confusing for check
 
 				propagate_mouse_activated = true;
 
 				incr_search.clear();
-				return -1;
+				if (!single_click_select) {
+					return -1;
+				}
 			}
 
 			if (select_mode == SELECT_MULTI && p_mod->get_command() && c.selectable) {
@@ -3804,6 +3806,14 @@ bool Tree::get_allow_reselect() const {
 	return allow_reselect;
 }
 
+void Tree::set_single_click_select(bool p_single) {
+	single_click_select = p_single;
+}
+
+bool Tree::is_single_click_select_enabled() const {
+	return single_click_select;
+}
+
 void Tree::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_range_click_timeout"), &Tree::_range_click_timeout);
 	ClassDB::bind_method(D_METHOD("_gui_input"), &Tree::_gui_input);
@@ -3856,6 +3866,9 @@ void Tree::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_hide_folding", "hide"), &Tree::set_hide_folding);
 	ClassDB::bind_method(D_METHOD("is_folding_hidden"), &Tree::is_folding_hidden);
 
+	ClassDB::bind_method(D_METHOD("set_single_click_select", "allow"), &Tree::set_single_click_select);
+	ClassDB::bind_method(D_METHOD("is_single_click_select_enabled"), &Tree::is_single_click_select_enabled);
+
 	ClassDB::bind_method(D_METHOD("set_drop_mode_flags", "flags"), &Tree::set_drop_mode_flags);
 	ClassDB::bind_method(D_METHOD("get_drop_mode_flags"), &Tree::get_drop_mode_flags);
 
@@ -3871,6 +3884,7 @@ void Tree::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "allow_rmb_select"), "set_allow_rmb_select", "get_allow_rmb_select");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "hide_folding"), "set_hide_folding", "is_folding_hidden");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "hide_root"), "set_hide_root", "is_root_hidden");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "single_click_select"), "set_single_click_select", "is_single_click_select_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "drop_mode_flags", PROPERTY_HINT_FLAGS, "On Item,In between"), "set_drop_mode_flags", "get_drop_mode_flags");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "select_mode", PROPERTY_HINT_ENUM, "Single,Row,Multi"), "set_select_mode", "get_select_mode");
 
@@ -3915,6 +3929,7 @@ Tree::Tree() {
 	popup_menu = nullptr;
 	popup_edited_item = nullptr;
 	text_editor = nullptr;
+	single_click_select = false;
 	set_focus_mode(FOCUS_ALL);
 
 	popup_menu = memnew(PopupMenu);

@@ -338,6 +338,7 @@ private:
 	int popup_edited_item_col;
 	bool hide_root;
 	SelectMode select_mode;
+	bool single_click_select;
 
 	int blocked;
 
@@ -603,6 +604,9 @@ public:
 
 	void set_allow_reselect(bool p_allow);
 	bool get_allow_reselect() const;
+
+	void set_single_click_select(bool p_single);
+	bool is_single_click_select_enabled() const;
 
 	Tree();
 	~Tree();
