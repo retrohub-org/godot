@@ -3272,6 +3272,111 @@ void Tree::_go_down() {
 	accept_event();
 }
 
+void Tree::_go_prev() {
+	TreeItem *prev = nullptr;
+	if (!selected_item) {
+		prev = get_last_item();
+		selected_col = columns.size();
+	} else {
+		prev = selected_item;
+		if (last_keypress != 0) {
+			//incr search next
+			int col;
+			prev = _search_item_text(prev, incr_search, &col, true, true);
+			if (!prev) {
+				accept_event();
+				return;
+			}
+		}
+	}
+
+	if (select_mode == SELECT_MULTI) {
+		if (!prev) {
+			return;
+		}
+		selected_item = prev;
+		emit_signal(SNAME("cell_selected"));
+		queue_redraw();
+	} else {
+		// Check if it's first column, and move up if necessary
+		int col = selected_col;
+		col -= 1;
+		while (prev) {
+			if (col >= 0) {
+				if (prev->cells[col].selectable) {
+					break;
+				} else {
+					col -= 1;
+				}
+			} else {
+				prev = prev->get_prev_visible();
+				col = columns.size() - 1;
+			}
+		}
+		if (!prev) {
+			return; // do nothing..
+		}
+		prev->select(col);
+	}
+
+	ensure_cursor_is_visible();
+	accept_event();
+}
+
+void Tree::_go_next() {
+	TreeItem *next = nullptr;
+	if (!selected_item) {
+		if (root) {
+			next = hide_root ? root->get_next_visible() : root;
+			selected_col = -1;
+		}
+	} else {
+		next = selected_item;
+		if (last_keypress != 0) {
+			//incr search next
+			int col;
+			next = _search_item_text(next, incr_search, &col, true);
+			if (!next) {
+				accept_event();
+				return;
+			}
+		}
+	}
+
+	if (select_mode == SELECT_MULTI) {
+		if (!next) {
+			return;
+		}
+
+		selected_item = next;
+		emit_signal(SNAME("cell_selected"));
+		queue_redraw();
+	} else {
+		// Check if it's last column, and move down if necessary
+		int col = selected_col;
+		col += 1;
+		while (next) {
+			if (col < columns.size()) {
+				if (next->cells[col].selectable) {
+					break;
+				} else {
+					col += 1;
+				}
+			} else {
+				next = next->get_next_visible();
+				col = 0;
+			}
+		}
+		if (!next) {
+			return; // do nothing..
+		}
+		next->select(col);
+	}
+
+	ensure_cursor_is_visible();
+	accept_event();
+}
+
 bool Tree::_scroll(bool p_horizontal, float p_pages) {
 	ScrollBar *scroll = p_horizontal ? (ScrollBar *)h_scroll : (ScrollBar *)v_scroll;
 
@@ -3323,7 +3428,19 @@ void Tree::gui_input(const Ref<InputEvent> &p_event) {
 	Ref<InputEventKey> k = p_event;
 
 	bool is_command = k.is_valid() && k->is_command_or_control_pressed();
-	if ((p_event->is_action("ui_right", true) || p_event->is_action("ui_focus_next", true)) && p_event->is_pressed()) {
+	if (p_event->is_action("ui_focus_next", true) && p_event->is_pressed()) {
+		if (!cursor_can_exit_tree) {
+			accept_event();
+		}
+
+		_go_next();
+	} else if (p_event->is_action("ui_focus_prev", true) && p_event->is_pressed()) {
+		if (!cursor_can_exit_tree) {
+			accept_event();
+		}
+
+		_go_prev();
+	} else if (p_event->is_action("ui_right", true) && p_event->is_pressed()) {
 		if (!cursor_can_exit_tree) {
 			accept_event();
 		}
@@ -3341,7 +3458,7 @@ void Tree::gui_input(const Ref<InputEvent> &p_event) {
 		} else {
 			_go_right();
 		}
-	} else if ((p_event->is_action("ui_left", true) || p_event->is_action("ui_focus_prev", true)) && p_event->is_pressed()) {
+	} else if (p_event->is_action("ui_left", true) && p_event->is_pressed()) {
 		if (!cursor_can_exit_tree) {
 			accept_event();
 		}
@@ -3361,14 +3478,14 @@ void Tree::gui_input(const Ref<InputEvent> &p_event) {
 			_go_left();
 		}
 
-	} else if ((p_event->is_action("ui_up", true) || p_event->is_action("ui_focus_prev", true)) && p_event->is_pressed() && !is_command) {
+	} else if (p_event->is_action("ui_up", true) && p_event->is_pressed() && !is_command) {
 		if (!cursor_can_exit_tree) {
 			accept_event();
 		}
 
 		_go_up();
 
-	} else if ((p_event->is_action("ui_down", true) || p_event->is_action("ui_focus_next", true)) && p_event->is_pressed() && !is_command) {
+	} else if (p_event->is_action("ui_down", true) && p_event->is_pressed() && !is_command) {
 		if (!cursor_can_exit_tree) {
 			accept_event();
 		}
