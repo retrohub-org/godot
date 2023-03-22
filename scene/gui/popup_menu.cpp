@@ -387,9 +387,9 @@ void PopupMenu::gui_input(const Ref<InputEvent> &p_event) {
 		Ref<InputEventJoypadButton> joypadbutton_event = p_event;
 		bool is_joypad_event = (joypadmotion_event.is_valid() || joypadbutton_event.is_valid());
 
-		if (p_event->is_action("ui_down", true) && p_event->is_pressed()) {
+		if ((p_event->is_action("ui_down", true) || p_event->is_action("ui_focus_next", true)) && p_event->is_pressed()) {
 			if (is_joypad_event) {
-				if (!input->is_action_just_pressed("ui_down", true)) {
+				if (!input->is_action_just_pressed("ui_down", true) && !input->is_action_just_pressed("ui_focus_next", true)) {
 					return;
 				}
 				set_process_internal(true);
@@ -425,9 +425,9 @@ void PopupMenu::gui_input(const Ref<InputEvent> &p_event) {
 					}
 				}
 			}
-		} else if (p_event->is_action("ui_up", true) && p_event->is_pressed()) {
+		} else if ((p_event->is_action("ui_up", true) || p_event->is_action("ui_focus_prev", true)) && p_event->is_pressed()) {
 			if (is_joypad_event) {
-				if (!input->is_action_just_pressed("ui_up", true)) {
+				if (!input->is_action_just_pressed("ui_up", true) && !input->is_action_just_pressed("ui_focus_prev", true)) {
 					return;
 				}
 				set_process_internal(true);

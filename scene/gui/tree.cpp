@@ -3323,7 +3323,7 @@ void Tree::gui_input(const Ref<InputEvent> &p_event) {
 	Ref<InputEventKey> k = p_event;
 
 	bool is_command = k.is_valid() && k->is_command_or_control_pressed();
-	if (p_event->is_action("ui_right", true) && p_event->is_pressed()) {
+	if ((p_event->is_action("ui_right", true) || p_event->is_action("ui_focus_next", true)) && p_event->is_pressed()) {
 		if (!cursor_can_exit_tree) {
 			accept_event();
 		}
@@ -3341,7 +3341,7 @@ void Tree::gui_input(const Ref<InputEvent> &p_event) {
 		} else {
 			_go_right();
 		}
-	} else if (p_event->is_action("ui_left", true) && p_event->is_pressed()) {
+	} else if ((p_event->is_action("ui_left", true) || p_event->is_action("ui_focus_prev", true)) && p_event->is_pressed()) {
 		if (!cursor_can_exit_tree) {
 			accept_event();
 		}
@@ -3361,14 +3361,14 @@ void Tree::gui_input(const Ref<InputEvent> &p_event) {
 			_go_left();
 		}
 
-	} else if (p_event->is_action("ui_up", true) && p_event->is_pressed() && !is_command) {
+	} else if ((p_event->is_action("ui_up", true) || p_event->is_action("ui_focus_prev", true)) && p_event->is_pressed() && !is_command) {
 		if (!cursor_can_exit_tree) {
 			accept_event();
 		}
 
 		_go_up();
 
-	} else if (p_event->is_action("ui_down", true) && p_event->is_pressed() && !is_command) {
+	} else if ((p_event->is_action("ui_down", true) || p_event->is_action("ui_focus_next", true)) && p_event->is_pressed() && !is_command) {
 		if (!cursor_can_exit_tree) {
 			accept_event();
 		}
