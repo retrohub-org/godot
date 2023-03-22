@@ -668,6 +668,8 @@ private:
 	void _go_right();
 	void _go_down();
 	void _go_up();
+	void _go_prev();
+	void _go_next();
 
 	bool _scroll(bool p_horizontal, float p_pages);
 
