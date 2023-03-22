@@ -507,6 +507,8 @@ private:
 	void _go_right();
 	void _go_down();
 	void _go_up();
+	void _go_prev();
+	void _go_next();
 
 protected:
 	static void _bind_methods();
