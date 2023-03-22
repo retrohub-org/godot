@@ -274,7 +274,7 @@ void PopupMenu::gui_input(const Ref<InputEvent> &p_event) {
 	ERR_FAIL_COND(p_event.is_null());
 
 	if (!items.is_empty()) {
-		if (p_event->is_action("ui_down", true) && p_event->is_pressed()) {
+		if ((p_event->is_action("ui_down", true) || p_event->is_action("ui_focus_next", true)) && p_event->is_pressed()) {
 			int search_from = mouse_over + 1;
 			if (search_from >= items.size()) {
 				search_from = 0;
@@ -306,7 +306,7 @@ void PopupMenu::gui_input(const Ref<InputEvent> &p_event) {
 					}
 				}
 			}
-		} else if (p_event->is_action("ui_up", true) && p_event->is_pressed()) {
+		} else if ((p_event->is_action("ui_up", true) || p_event->is_action("ui_focus_prev", true)) && p_event->is_pressed()) {
 			int search_from = mouse_over - 1;
 			if (search_from < 0) {
 				search_from = items.size() - 1;
