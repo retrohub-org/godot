@@ -3172,6 +3172,7 @@ void Tree::_go_left() {
 			emit_signal(SNAME("cell_selected"));
 			accept_event();
 		} else {
+			int old_col = selected_col;
 			do {
 				if (selected_item->is_selectable(selected_col - 1)) {
 					selected_item->select(selected_col - 1);
@@ -3180,6 +3181,9 @@ void Tree::_go_left() {
 				}
 				selected_col--;
 			} while (selected_col > 0);
+			if (selected_col <= 0) {
+				selected_col = old_col;
+			}
 		}
 	}
 	queue_redraw();
@@ -3193,6 +3197,7 @@ void Tree::_go_right() {
 			emit_signal(SNAME("cell_selected"));
 			accept_event();
 		} else {
+			int old_col = selected_col;
 			do {
 				if (selected_item->is_selectable(selected_col + 1)) {
 					selected_item->select(selected_col + 1);
@@ -3201,6 +3206,9 @@ void Tree::_go_right() {
 				}
 				selected_col++;
 			} while (selected_col < (columns.size() - 1));
+			if (selected_col >= (columns.size() - 1)) {
+				selected_col = old_col;
+			}
 		}
 	}
 	queue_redraw();
