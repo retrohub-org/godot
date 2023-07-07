@@ -56,6 +56,13 @@
 				[/codeblock]
 			</description>
 		</method>
+		<method name="_raw_input" qualifiers="virtual">
+			<return type="void"/>
+			<param index="0" name="event" type="InputEvent"/>
+			<description>
+				Called when there is an input event. Equivalent to [method _input], but runs at the earliest step possible, even before viewport handling.
+			</description>
+		</method>
 		<method name="_input" qualifiers="virtual">
 			<return type="void" />
 			<param index="0" name="event" type="InputEvent" />
