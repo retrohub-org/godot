@@ -3160,7 +3160,12 @@ void Viewport::push_input(const Ref<InputEvent> &p_event, bool p_local_coords) {
 		_update_mouse_over();
 	}
 
-	if (is_embedding_subwindows() && _sub_windows_forward_input(ev)) {
+	if (!is_input_handled()) {
+		ERR_FAIL_COND(!is_inside_tree());
+		get_tree()->_call_input_pause(raw_input_group, SceneTree::CALL_INPUT_TYPE_RAW_INPUT, ev, this);
+	}
+
+	if (!is_input_handled() && is_embedding_subwindows() && _sub_windows_forward_input(ev)) {
 		set_input_as_handled();
 		return;
 	}
@@ -4662,6 +4667,7 @@ Viewport::Viewport() {
 	set_mesh_lod_threshold(mesh_lod_threshold);
 
 	String id = itos(get_instance_id());
+	raw_input_group = "_vp_raw_input" + id;
 	input_group = "_vp_input" + id;
 	gui_input_group = "_vp_gui_input" + id;
 	unhandled_input_group = "_vp_unhandled_input" + id;

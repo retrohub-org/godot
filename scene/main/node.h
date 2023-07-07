@@ -199,6 +199,7 @@ private:
 		bool physics_process_internal = false;
 		bool process_internal = false;
 
+		bool raw_input = false;
 		bool input = false;
 		bool shortcut_input = false;
 		bool unhandled_input = false;
@@ -302,6 +303,7 @@ protected:
 	void _set_name_nocheck(const StringName &p_name);
 
 	//call from SceneTree
+	void _call_raw_input(const Ref<InputEvent> &p_event);
 	void _call_input(const Ref<InputEvent> &p_event);
 	void _call_shortcut_input(const Ref<InputEvent> &p_event);
 	void _call_unhandled_input(const Ref<InputEvent> &p_event);
@@ -310,6 +312,7 @@ protected:
 	void _validate_property(PropertyInfo &p_property) const;
 
 protected:
+	virtual void raw_input(const Ref<InputEvent> &p_event);
 	virtual void input(const Ref<InputEvent> &p_event);
 	virtual void shortcut_input(const Ref<InputEvent> &p_key_event);
 	virtual void unhandled_input(const Ref<InputEvent> &p_event);
@@ -322,6 +325,7 @@ protected:
 	GDVIRTUAL0(_ready)
 	GDVIRTUAL0RC(Vector<String>, _get_configuration_warnings)
 
+	GDVIRTUAL1(_raw_input, Ref<InputEvent>)
 	GDVIRTUAL1(_input, Ref<InputEvent>)
 	GDVIRTUAL1(_shortcut_input, Ref<InputEvent>)
 	GDVIRTUAL1(_unhandled_input, Ref<InputEvent>)
@@ -526,6 +530,9 @@ public:
 
 	void set_physics_process_priority(int p_priority);
 	int get_physics_process_priority() const;
+
+	void set_process_raw_input(bool p_enable);
+	bool is_processing_raw_input() const;
 
 	void set_process_input(bool p_enable);
 	bool is_processing_input() const;

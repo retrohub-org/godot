@@ -121,6 +121,7 @@ public:
 	StringName _enter_tree;
 	StringName _exit_tree;
 	StringName _draw;
+	StringName _raw_input;
 	StringName _input;
 	StringName _ready;
 	StringName _unhandled_input;

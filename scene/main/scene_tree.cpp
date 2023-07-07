@@ -1191,6 +1191,9 @@ void SceneTree::_call_input_pause(const StringName &p_group, CallInputType p_cal
 		}
 
 		switch (p_call_type) {
+			case CALL_INPUT_TYPE_RAW_INPUT:
+				n->_call_raw_input(p_input);
+				break;
 			case CALL_INPUT_TYPE_INPUT:
 				n->_call_input(p_input);
 				break;

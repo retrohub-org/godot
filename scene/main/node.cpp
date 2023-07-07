@@ -98,6 +98,9 @@ void Node::_notification(int p_notification) {
 				}
 			}
 
+			if (data.raw_input) {
+				add_to_group("_vp_raw_input" + itos(get_viewport()->get_instance_id()));
+			}
 			if (data.input) {
 				add_to_group("_vp_input" + itos(get_viewport()->get_instance_id()));
 			}
@@ -122,6 +125,9 @@ void Node::_notification(int p_notification) {
 			get_tree()->nodes_in_tree_count--;
 			orphan_node_count++;
 
+			if (data.raw_input) {
+				remove_from_group("_vp_raw_input" + itos(get_viewport()->get_instance_id()));
+			}
 			if (data.input) {
 				remove_from_group("_vp_input" + itos(get_viewport()->get_instance_id()));
 			}
@@ -160,6 +166,10 @@ void Node::_notification(int p_notification) {
 		} break;
 
 		case NOTIFICATION_READY: {
+			if (GDVIRTUAL_IS_OVERRIDDEN(_raw_input)) {
+				set_process_raw_input(true);
+			}
+
 			if (GDVIRTUAL_IS_OVERRIDDEN(_input)) {
 				set_process_input(true);
 			}
@@ -1070,6 +1080,28 @@ void Node::set_process_input(bool p_enable) {
 
 bool Node::is_processing_input() const {
 	return data.input;
+}
+
+void Node::set_process_raw_input(bool p_enable) {
+	ERR_THREAD_GUARD
+	if (p_enable == data.raw_input) {
+		return;
+	}
+
+	data.raw_input = p_enable;
+	if (!is_inside_tree()) {
+		return;
+	}
+
+	if (p_enable) {
+		add_to_group("_vp_raw_input" + itos(get_viewport()->get_instance_id()));
+	} else {
+		remove_from_group("_vp_raw_input" + itos(get_viewport()->get_instance_id()));
+	}
+}
+
+bool Node::is_processing_raw_input() const {
+	return data.raw_input;
 }
 
 void Node::set_process_shortcut_input(bool p_enable) {
@@ -3092,6 +3124,16 @@ void Node::request_ready() {
 	data.ready_first = true;
 }
 
+void Node::_call_raw_input(const Ref<InputEvent> &p_event) {
+	if (p_event->get_device() != InputEvent::DEVICE_ID_INTERNAL) {
+		GDVIRTUAL_CALL(_raw_input, p_event);
+	}
+	if (!is_inside_tree() || !get_viewport() || get_viewport()->is_input_handled()) {
+		return;
+	}
+	raw_input(p_event);
+}
+
 void Node::_call_input(const Ref<InputEvent> &p_event) {
 	if (p_event->get_device() != InputEvent::DEVICE_ID_INTERNAL) {
 		GDVIRTUAL_CALL(_input, p_event);
@@ -3136,6 +3178,9 @@ void Node::_validate_property(PropertyInfo &p_property) const {
 	if ((p_property.name == "process_thread_group_order" || p_property.name == "process_thread_messages") && data.process_thread_group == PROCESS_THREAD_GROUP_INHERIT) {
 		p_property.usage = 0;
 	}
+}
+
+void Node::raw_input(const Ref<InputEvent> &p_event) {
 }
 
 void Node::input(const Ref<InputEvent> &p_event) {
@@ -3292,6 +3337,8 @@ void Node::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_physics_process_priority", "priority"), &Node::set_physics_process_priority);
 	ClassDB::bind_method(D_METHOD("get_physics_process_priority"), &Node::get_physics_process_priority);
 	ClassDB::bind_method(D_METHOD("is_processing"), &Node::is_processing);
+	ClassDB::bind_method(D_METHOD("set_process_raw_input", "enable"), &Node::set_process_raw_input);
+	ClassDB::bind_method(D_METHOD("is_processing_raw_input"), &Node::is_processing_raw_input);
 	ClassDB::bind_method(D_METHOD("set_process_input", "enable"), &Node::set_process_input);
 	ClassDB::bind_method(D_METHOD("is_processing_input"), &Node::is_processing_input);
 	ClassDB::bind_method(D_METHOD("set_process_shortcut_input", "enable"), &Node::set_process_shortcut_input);
@@ -3505,6 +3552,7 @@ void Node::_bind_methods() {
 	GDVIRTUAL_BIND(_exit_tree);
 	GDVIRTUAL_BIND(_ready);
 	GDVIRTUAL_BIND(_get_configuration_warnings);
+	GDVIRTUAL_BIND(_raw_input, "event");
 	GDVIRTUAL_BIND(_input, "event");
 	GDVIRTUAL_BIND(_shortcut_input, "event");
 	GDVIRTUAL_BIND(_unhandled_input, "event");

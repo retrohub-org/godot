@@ -123,6 +123,8 @@ SceneStringNames::SceneStringNames() {
 	camera_entered = StaticCString::create("camera_entered");
 	camera_exited = StaticCString::create("camera_exited");
 
+	_raw_input = StaticCString::create("_raw_input");
+
 	_input = StaticCString::create("_input");
 	_input_event = StaticCString::create("_input_event");
 
