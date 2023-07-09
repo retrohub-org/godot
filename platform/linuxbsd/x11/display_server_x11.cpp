@@ -3741,7 +3741,7 @@ DisplayServer::WindowID DisplayServerX11::_get_focused_window_or_popup() const {
 		return E->get();
 	}
 
-	return last_focused_window;
+	return currently_focused_window;
 }
 
 void DisplayServerX11::_dispatch_input_events(const Ref<InputEvent> &p_event) {
@@ -4346,7 +4346,7 @@ void DisplayServerX11::process_events() {
 				}
 
 				WindowData &wd = windows[window_id];
-				last_focused_window = window_id;
+				currently_focused_window = window_id;
 				wd.focused = true;
 
 				// Keep track of focus order for overlapping windows.
@@ -4401,6 +4401,7 @@ void DisplayServerX11::process_events() {
 					im_selection = Vector2i();
 					OS_Unix::get_singleton()->get_main_loop()->notification(MainLoop::NOTIFICATION_OS_IME_UPDATE);
 				}
+				currently_focused_window = INVALID_WINDOW_ID;
 				wd.focused = false;
 
 				Input::get_singleton()->release_pressed_events();

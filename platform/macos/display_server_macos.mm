@@ -363,7 +363,7 @@ DisplayServer::WindowID DisplayServerMacOS::_get_focused_window_or_popup() const
 		return E->get();
 	}
 
-	return last_focused_window;
+	return currently_focused_window;
 }
 
 void DisplayServerMacOS::mouse_enter_window(WindowID p_window) {
@@ -718,8 +718,8 @@ void DisplayServerMacOS::update_im_text(const Point2i &p_selection, const String
 	OS::get_singleton()->get_main_loop()->notification(MainLoop::NOTIFICATION_OS_IME_UPDATE);
 }
 
-void DisplayServerMacOS::set_last_focused_window(WindowID p_window) {
-	last_focused_window = p_window;
+void DisplayServerMacOS::set_currently_focused_window(WindowID p_window) {
+	currently_focused_window = p_window;
 }
 
 void DisplayServerMacOS::set_is_resizing(bool p_is_resizing) {
