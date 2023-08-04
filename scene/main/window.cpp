@@ -732,9 +732,6 @@ void Window::_event_callback(DisplayServer::WindowEvent p_event) {
 			emit_signal(SNAME("focus_exited"));
 		} break;
 		case DisplayServer::WINDOW_EVENT_CLOSE_REQUEST: {
-			if (exclusive_child != nullptr) {
-				break; //has an exclusive child, can't get events until child is closed
-			}
 			_propagate_window_notification(this, NOTIFICATION_WM_CLOSE_REQUEST);
 			emit_signal(SNAME("close_requested"));
 		} break;
