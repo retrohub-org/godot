@@ -1805,14 +1805,21 @@ int PopupMenu::get_item_count() const {
 void PopupMenu::scroll_to_item(int p_idx) {
 	ERR_FAIL_INDEX(p_idx, items.size());
 
-	// Scroll item into view (upwards).
-	if (items[p_idx]._ofs_cache - scroll_container->get_v_scroll() < -control->get_position().y) {
-		scroll_container->set_v_scroll(items[p_idx]._ofs_cache + control->get_position().y);
-	}
+	// Get the y-coordinate of the item relative to the scroll container.
+	int item_y = items[p_idx]._ofs_cache;
 
-	// Scroll item into view (downwards).
-	if (items[p_idx]._ofs_cache + items[p_idx]._height_cache - scroll_container->get_v_scroll() > -control->get_position().y + scroll_container->get_size().height) {
-		scroll_container->set_v_scroll(items[p_idx]._ofs_cache + items[p_idx]._height_cache + control->get_position().y);
+	// Get the height of the visible area of the scroll container.
+	int visible_height = scroll_container->get_size().height;
+
+	// Calculate the position of the item relative to the visible area.
+	int relative_y = item_y - scroll_container->get_v_scroll();
+
+	if (relative_y < 0) {
+		// Scroll up to make the item fully visible at the top.
+		scroll_container->set_v_scroll(item_y);
+	} else if (relative_y + items[p_idx]._height_cache > visible_height) {
+		// Scroll down to make the item fully visible at the bottom.
+		scroll_container->set_v_scroll(item_y + items[p_idx]._height_cache - visible_height);
 	}
 }
 
