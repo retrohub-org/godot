@@ -482,11 +482,6 @@ void LineEdit::gui_input(const Ref<InputEvent> &p_event) {
 			return;
 		}
 
-		if (k->is_action("ui_cancel")) {
-			release_focus();
-			return;
-		}
-
 		if (is_shortcut_keys_enabled()) {
 			if (k->is_action("ui_copy", true)) {
 				copy_text();
