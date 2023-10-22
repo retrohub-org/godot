@@ -515,7 +515,7 @@ void TextEdit::_notification(int p_what) {
 
 			Size2 size = get_size();
 			bool rtl = is_layout_rtl();
-			if ((!has_focus() && !(menu && menu->has_focus())) || !window_has_focus) {
+			if ((!has_focus() && !(menu && menu->has_focus())) || (!window_has_focus && !caret_force_displayed)) {
 				draw_caret = false;
 			}
 
@@ -4499,6 +4499,20 @@ bool TextEdit::is_caret_blink_enabled() const {
 	return caret_blink_enabled;
 }
 
+void TextEdit::set_caret_force_displayed(const bool p_enabled) {
+	if (caret_force_displayed == p_enabled) {
+		return;
+	}
+
+	caret_force_displayed = p_enabled;
+
+	queue_redraw();
+}
+
+bool TextEdit::is_caret_force_displayed() const {
+	return caret_force_displayed;
+}
+
 float TextEdit::get_caret_blink_interval() const {
 	return caret_blink_timer->get_wait_time();
 }
@@ -6216,6 +6230,9 @@ void TextEdit::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_caret_blink_enabled", "enable"), &TextEdit::set_caret_blink_enabled);
 	ClassDB::bind_method(D_METHOD("is_caret_blink_enabled"), &TextEdit::is_caret_blink_enabled);
 
+	ClassDB::bind_method(D_METHOD("set_caret_force_displayed", "enable"), &TextEdit::set_caret_force_displayed);
+	ClassDB::bind_method(D_METHOD("is_caret_force_displayed"), &TextEdit::is_caret_force_displayed);
+
 	ClassDB::bind_method(D_METHOD("set_caret_blink_interval", "interval"), &TextEdit::set_caret_blink_interval);
 	ClassDB::bind_method(D_METHOD("get_caret_blink_interval"), &TextEdit::get_caret_blink_interval);
 
@@ -6471,6 +6488,7 @@ void TextEdit::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "caret_move_on_right_click"), "set_move_caret_on_right_click_enabled", "is_move_caret_on_right_click_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "caret_mid_grapheme"), "set_caret_mid_grapheme_enabled", "is_caret_mid_grapheme_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "caret_multiple"), "set_multiple_carets_enabled", "is_multiple_carets_enabled");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "caret_force_displayed"), "set_caret_force_displayed", "is_caret_force_displayed");
 
 	ADD_GROUP("BiDi", "");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "text_direction", PROPERTY_HINT_ENUM, "Auto,Left-to-Right,Right-to-Left,Inherited"), "set_text_direction", "get_text_direction");
@@ -7060,7 +7078,7 @@ void TextEdit::_reset_caret_blink_timer() {
 
 void TextEdit::_toggle_draw_caret() {
 	draw_caret = !draw_caret;
-	if (is_visible_in_tree() && has_focus() && window_has_focus) {
+	if (is_visible_in_tree() && has_focus() && (window_has_focus || caret_force_displayed)) {
 		queue_redraw();
 	}
 }

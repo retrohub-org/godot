@@ -419,6 +419,7 @@ private:
 	bool draw_caret_when_editable_disabled = false;
 
 	bool caret_blink_enabled = false;
+	bool caret_force_displayed = false;
 	Timer *caret_blink_timer = nullptr;
 
 	bool move_caret_on_right_click = true;
@@ -822,6 +823,9 @@ public:
 
 	void set_caret_blink_enabled(const bool p_enabled);
 	bool is_caret_blink_enabled() const;
+
+	void set_caret_force_displayed(const bool p_enabled);
+	bool is_caret_force_displayed() const;
 
 	void set_caret_blink_interval(const float p_interval);
 	float get_caret_blink_interval() const;
