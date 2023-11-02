@@ -63,6 +63,8 @@ protected:
 
 	virtual void _parent_focused();
 
+	void unhandled_input(const Ref<InputEvent> &p_event) override;
+
 	virtual void _post_popup() override;
 
 public:
