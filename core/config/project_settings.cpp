@@ -103,6 +103,8 @@ const PackedStringArray ProjectSettings::_get_supported_features() {
 #ifdef GLES3_ENABLED
 	features.append("GL Compatibility");
 #endif
+
+	features.append("RetroHub");
 	return features;
 }
 
