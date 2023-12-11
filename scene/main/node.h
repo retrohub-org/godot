@@ -392,6 +392,8 @@ public:
 
 	InternalMode get_internal_mode() const;
 
+	bool deferred_add_child = false;
+
 	void add_child(Node *p_child, bool p_force_readable_name = false, InternalMode p_internal = INTERNAL_MODE_DISABLED);
 	void add_sibling(Node *p_sibling, bool p_force_readable_name = false);
 	void remove_child(Node *p_child);

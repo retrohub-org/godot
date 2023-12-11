@@ -1421,8 +1421,12 @@ void Node::_add_child_nocheck(Node *p_child, const StringName &p_name, InternalM
 	//recognize children created in this node constructor
 	p_child->data.parent_owned = data.in_constructor;
 	add_child_notify(p_child);
-	notification(NOTIFICATION_CHILD_ORDER_CHANGED);
-	emit_signal(SNAME("child_order_changed"));
+	if(!deferred_add_child) {
+		deferred_add_child = true;
+		call_deferred("notification", NOTIFICATION_CHILD_ORDER_CHANGED);
+		call_deferred("emit_signal", SNAME("child_order_changed"));
+		set_deferred("deferred_add_child", false);
+	}
 }
 
 void Node::add_child(Node *p_child, bool p_force_readable_name, InternalMode p_internal) {
