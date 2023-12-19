@@ -1681,8 +1681,26 @@ Control *Viewport::_gui_find_control_at_pos(CanvasItem *p_node, const Point2 &p_
 	}
 
 	Control *c = Object::cast_to<Control>(p_node);
+	Point2 point = matrix.affine_inverse().xform(p_global);
 
-	if (!c || !c->is_clipping_contents() || c->has_point(matrix.affine_inverse().xform(p_global))) {
+	if (!c || !c->is_clipping_contents() || c->has_point(point)) {
+		// If node is a Container, it can optimize the search at the given position.
+		Container *cnt = Object::cast_to<Container>(p_node);
+		if (cnt && cnt->has_point(point)) {
+			Vector<CanvasItem *> children = cnt->get_children_at_pos(point);
+			for (CanvasItem *ci : children) {
+				if (ci->is_set_as_top_level()) {
+					continue;
+				}
+
+				Control *ret = _gui_find_control_at_pos(ci, p_global, matrix);
+				if (ret) {
+					return ret;
+				}
+			}
+		}
+
+		// Fallback; iterate over all children
 		for (int i = p_node->get_child_count() - 1; i >= 0; i--) {
 			CanvasItem *ci = Object::cast_to<CanvasItem>(p_node->get_child(i));
 			if (!ci || ci->is_set_as_top_level()) {

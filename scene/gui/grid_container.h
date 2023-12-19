@@ -43,6 +43,9 @@ class GridContainer : public Container {
 		int v_separation = 0;
 	} theme_cache;
 
+	Vector<int> cached_children_pos;
+	Vector<int> cached_children_idx;
+
 protected:
 	virtual void _update_theme_item_cache() override;
 
@@ -53,6 +56,7 @@ public:
 	void set_columns(int p_columns);
 	int get_columns() const;
 	virtual Size2 get_minimum_size() const override;
+	virtual Vector<CanvasItem *> get_children_at_pos(const Point2 &p_pos) const override;
 
 	GridContainer();
 };

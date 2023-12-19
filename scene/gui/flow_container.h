@@ -32,6 +32,7 @@
 #define FLOW_CONTAINER_H
 
 #include "scene/gui/container.h"
+#include "core/templates/vector.h"
 
 class FlowContainer : public Container {
 	GDCLASS(FlowContainer, Container);
@@ -57,6 +58,10 @@ private:
 
 	void _resort();
 
+	Vector<int> cached_children_pos;
+	Vector<int> cached_children_idx;
+	Vector<Node *> cached_visible_children;
+
 protected:
 	bool is_fixed = false;
 
@@ -76,6 +81,7 @@ public:
 	bool is_vertical() const;
 
 	virtual Size2 get_minimum_size() const override;
+	virtual Vector<CanvasItem *> get_children_at_pos(const Point2& p_pos) const override;
 
 	virtual Vector<int> get_allowed_size_flags_horizontal() const override;
 	virtual Vector<int> get_allowed_size_flags_vertical() const override;
